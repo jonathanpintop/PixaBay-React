@@ -48,9 +48,9 @@ function App() {
     guardarPaginaActual(nuevaPaginaActual);
   };
 
-  // Mover la pantalla hacia arriba
+   // Mover la pantalla hacia arriba
   const jumbotron = document.querySelector(".jumbotron");
-  jumbotron.scrollIntoView({ behavior: "smooth" });
+  jumbotron.scrollIntoView({ behavior: "smooth"})
 
   return (
     <div className="container">
@@ -60,7 +60,7 @@ function App() {
         <Formulario guardarBusqueda={guardarBusqueda} />
       </div>
 
-      <div className="row justify-content-center">
+      <div className="row justify-content-center"> 
         <ListadoImagenes imagenes={imagenes} />
 
         {paginaactual === 1 ? null : (

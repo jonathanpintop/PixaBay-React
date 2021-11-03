@@ -19,6 +19,7 @@ const Formulario = ({ guardarBusqueda }) => {
     //Enviar  el termino de búsqueda hacia el componente prinicipal
 
     guardarBusqueda(termino);
+    
   };
 
   return (

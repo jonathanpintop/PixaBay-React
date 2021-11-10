@@ -50,7 +50,7 @@ function App() {
 
    // Mover la pantalla hacia arriba
   const jumbotron = document.querySelector(".jumbotron");
-  jumbotron.scrollIntoView({ behavior: "smooth"})
+  jumbotron?.scrollIntoView({ behavior: "smooth"})
 
   return (
     <div className="container">

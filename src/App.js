@@ -1,87 +1,78 @@
 import React, { useState, useEffect } from "react";
-import Formulario from "./components/Formulario";
-import ListadoImagenes from "./components/ListadoImagenes";
+import Form from "./components/Form";
+import ImagesList from "./components/ImagesList";
 
 function App() {
-  // state de la app
-  const [busqueda, guardarBusqueda] = useState("");
-  const [imagenes, guardarImagenes] = useState([]);
-  const [paginaactual, guardarPaginaActual] = useState(1);
-  const [totalpaginas, guardarTotalPaginas] = useState(5);
+  const [search, setSearch] = useState("");
+  const [images, setImages] = useState([]);
+  const [currentpage, setCurrentPage] = useState(1);
+
+  const [totalPages, setTotalPages] = useState(5);
+ const [isNextButtonVisible, setIsNextButtonVisible] = useState(false);
 
   useEffect(() => {
-    const consultarApi = async () => {
-      if (busqueda === "") return;
+    const fetchApi = async () => {
+      if (search === "") return;
 
-      const imagenesPorPagina = 30;
+      const imagesPerPage = 30;
       const key = "22486130-7148b94e2a7f510734e909294";
-      const url = `https://pixabay.com/api/?key=${key}&q=${busqueda}&per_page=${imagenesPorPagina}&page=${paginaactual}`;
+      const url = `https://pixabay.com/api/?key=${key}&q=${search}&per_page=${imagesPerPage}&page=${currentpage}`;
 
-      const respuesta = await fetch(url);
-      const resultado = await respuesta.json();
+      const response = await fetch(url);
+      const result = await response.json();
+setIsNextButtonVisible(true)
+      const calculateTotalPages = Math.ceil(result.totalHits / imagesPerPage);
+      setTotalPages(calculateTotalPages);
 
-      // calcular el total de paginas
-      const calcularTotalPaginas = Math.ceil(
-        resultado.totalHits / imagenesPorPagina
-      );
-      guardarTotalPaginas(calcularTotalPaginas);
-
-      guardarImagenes(resultado.hits);
+      setImages(result.hits);
     };
 
-    consultarApi();
-  }, [busqueda, paginaactual]);
+    fetchApi();
+  }, [search, currentpage]);
 
-  // definir la pagina anterior
+  const backPage = () => {
+    const newCurrentPage = currentpage - 1;
+    if (newCurrentPage === 0) return;
 
-  const paginaAnterior = () => {
-    const nuevaPaginaActual = paginaactual - 1;
-    if (nuevaPaginaActual === 0) return;
-
-    guardarPaginaActual(nuevaPaginaActual);
+    setCurrentPage(newCurrentPage);
   };
 
-  const paginaSiguiente = () => {
-    const nuevaPaginaActual = paginaactual + 1;
-    if (nuevaPaginaActual > totalpaginas) return;
+  const nextPage = () => {
+    const newCurrentPage = currentpage + 1;
+    if (newCurrentPage > totalPages) return;
 
-    guardarPaginaActual(nuevaPaginaActual);
+    setCurrentPage(newCurrentPage);
   };
 
-   // Mover la pantalla hacia arriba
   const jumbotron = document.querySelector(".jumbotron");
-  jumbotron?.scrollIntoView({ behavior: "smooth"})
+  jumbotron?.scrollIntoView({ behavior: "smooth" });
 
   return (
     <div className="container">
       <div className="jumbotron">
-        <p className="lead text-center">Buscador de imagenes</p>
+        <p className="lead text-center">Pixabay Finder</p>
 
-        <Formulario guardarBusqueda={guardarBusqueda} />
+        <Form setSearch={setSearch} />
       </div>
 
-      <div className="row justify-content-center"> 
-        <ListadoImagenes imagenes={imagenes} />
+      <div className="row justify-content-center">
+        <ImagesList images={images} />
 
-        {paginaactual === 1 ? null : (
+        {currentpage === 1 ? null : (
           <button
             type="button"
             className="bbtn btn-info mr-1"
-            onClick={paginaAnterior}
+            onClick={backPage}
           >
-            &laquo; Anterior{" "}
+            &laquo; Back{" "}
           </button>
         )}
 
-        {paginaactual === totalpaginas ? null : (
-          <button
-            type="button"
-            className="bbtn btn-info"
-            onClick={paginaSiguiente}
-          >
-            Siguiente &raquo;
+        {currentpage !== totalPages  && isNextButtonVisible  &&  (
+          <button type="button" className="bbtn btn-info" onClick={nextPage}>
+            Next &raquo;
           </button>
-        )}
+        ) }
       </div>
     </div>
   );
